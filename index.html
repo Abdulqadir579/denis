@@ -144,6 +144,9 @@ option{background:var(--ink);color:var(--ivory)}
 .p-facts span{font-size:15px}
 .btn-dark{align-self:flex-start;background:var(--ink-3);color:var(--ivory);padding:16px 28px;font-size:11px;letter-spacing:.26em;margin-top:8px}
 .btn-dark:hover{background:var(--ink);color:var(--brass)}
+.p-desc{margin:0;font-size:15px;line-height:1.7;color:#4A4237}
+.tag-hot{background:var(--brass);color:var(--ink);font-weight:500}
+.p-card .tag{z-index:2}
 
 /* about */
 .about{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:72px;align-items:center}
@@ -381,8 +384,7 @@ option{background:var(--ink);color:var(--ivory)}
     <figure class="quote" style="margin:0 auto">
       <span class="mark" aria-hidden="true">“</span>
       <blockquote style="margin:0"><p>Denise made buying in Ras Al Khaimah feel effortless. She was honest about every option, answered within minutes, and found us a home we hadn’t even known to look for.</p></blockquote>
-      <!-- SAMPLE TESTIMONIAL: replace with a real client review before launch -->
-      <figcaption><span>[CLIENT NAME] · AL HAMRA VILLAGE — SAMPLE, REPLACE WITH A REAL REVIEW</span></figcaption>
+      <figcaption><span>Majid-jabbar-alshawaly · AL HAMRA VILLAGE</span></figcaption>
     </figure>
   </section>
 
@@ -439,6 +441,10 @@ option{background:var(--ink);color:var(--ivory)}
 
   /* ---------- Data: edit listings here ---------- */
   var LISTINGS = [
+    { key: 'ardee', photos: 7, type: 'Apartments', kind: 'Apartment', community: 'Al Marjan Island', aed: 30000,
+      tag: 'LATEST', location: 'ARDEE · AL MARJAN ISLAND', title: 'Ardee — New Off-Plan Launch',
+      specs: ['Off-plan launch', 'Handover Q4 2029', '50/50 payment plan'], priceText: 'EOI from AED 30,000',
+      url: WA + '?text=' + encodeURIComponent('Hi Denise, I found your website and I’d like details on Ardee at Al Marjan Island (new off-plan launch). Could you share the payment plan, available layouts and prices?') },
     { key: 'villa', photos: 6, type: 'Villas', kind: 'Villa', community: 'Al Hamra Village', aed: 30000000,
       tag: 'BEACHFRONT · WYNN VIEW', location: 'FALCON ISLAND · AL HAMRA VILLAGE', title: 'Seven-Bedroom Beachfront Villa with Pool',
       beds: '7', baths: '7+', area: '14,886 sq ft', url: PF + 'villa-for-sale-ras-al-khaimah-al-hamra-village-falcon-island-falcon-island-south-139707740.html' },
@@ -459,6 +465,16 @@ option{background:var(--ink);color:var(--ivory)}
       beds: 'Studio', baths: '1', area: '466 sq ft', url: PF + 'apartment-for-sale-ras-al-khaimah-mina-al-arab-hayat-island-bayviews-141911247.html' }
   ];
   var PROJECTS = [
+    { key: 'ardee', photos: 7, area: 'AL MARJAN ISLAND', status: 'OFF-PLAN · Q4 2029', tag: 'HOT',
+      name: 'Ardee at Al Marjan Island',
+      desc: 'A brand-new beachside launch at an exceptional first-sale price. Pay just 50% during construction, then the balance over 3 years after handover.',
+      facts: [
+        { label: 'HANDOVER', value: 'Q4 2029' },
+        { label: 'PAYMENT PLAN', value: '50% build · 50% over 3 yrs post-handover' },
+        { label: 'EOI OPEN NOW', value: 'From AED 30,000' }
+      ],
+      cta: 'REGISTER INTEREST',
+      url: WA + '?text=' + encodeURIComponent('Hi Denise, I found your website and I’d like to register my interest (EOI) in Ardee at Al Marjan Island. Could you share the full payment plan, available layouts and prices?') },
     { key: 'p-beach', photos: 5, area: 'AL MARJAN ISLAND', status: 'FIRST SALE', name: 'The Beach House at Al Marjan',
       price: 'AED 7,120,000', layout: '3BR loft · 2,916 sq ft', highlight: 'Beach & sea views', url: PF + 'apartment-for-sale-ras-al-khaimah-al-marjan-island-the-beach-house-at-al-marjan-139653788.html' },
     { key: 'p-mira', photos: 5, area: 'AL MAIRID', status: 'FIRST SALE', name: 'Mira Coral Bay',
@@ -514,15 +530,19 @@ option{background:var(--ink);color:var(--ivory)}
   var TABS = ['All', 'Villas', 'Townhouses', 'Apartments'];
 
   function cardHTML(l) {
-    var beds = l.beds === 'Studio' ? 'Studio' : l.beds + ' Beds';
-    var baths = l.baths + (l.baths === '1' ? ' Bath' : ' Baths');
+    var specs = l.specs || [
+      (l.beds === 'Studio' ? 'Studio' : l.beds + ' Beds'),
+      l.baths + (l.baths === '1' ? ' Bath' : ' Baths'),
+      l.area
+    ];
+    var emph = (l.tag === 'LATEST' || l.tag === 'HOT') ? ' tag-hot' : '';
     return '<article class="card">' +
-      galleryHTML(l.key, l.photos, l.title, 'gallery-4x5', '<span class="tag">' + esc(l.tag) + '</span>') +
+      galleryHTML(l.key, l.photos, l.title, 'gallery-4x5', '<span class="tag' + emph + '">' + esc(l.tag) + '</span>') +
       '<div class="card-body">' +
         '<span class="card-loc">' + esc(l.location) + '</span>' +
         '<h3>' + esc(l.title) + '</h3>' +
-        '<div class="card-specs"><span>' + beds + '</span><span>' + baths + '</span><span>' + esc(l.area) + '</span></div>' +
-        '<div class="card-foot"><span class="price">' + aed(l.aed) + '</span>' +
+        '<div class="card-specs">' + specs.map(function (s) { return '<span>' + esc(s) + '</span>'; }).join('') + '</div>' +
+        '<div class="card-foot"><span class="price">' + esc(l.priceText || aed(l.aed)) + '</span>' +
           '<a class="link-u" href="' + l.url + '" target="_blank" rel="noopener">VIEW DETAILS</a></div>' +
       '</div></article>';
   }
@@ -579,16 +599,21 @@ option{background:var(--ink);color:var(--ivory)}
 
   /* ---------- Projects ---------- */
   $('#projects-grid').innerHTML = PROJECTS.map(function (p) {
-    return '<article class="p-card">' + galleryHTML(p.key, p.photos, p.name, 'gallery-16x10') +
+    var facts = p.facts || [
+      { label: 'LISTED AT', value: p.price },
+      { label: 'LAYOUT', value: p.layout },
+      { label: 'HIGHLIGHT', value: p.highlight }
+    ];
+    var tag = p.tag ? '<span class="tag' + (p.tag === 'HOT' ? ' tag-hot' : '') + '">' + esc(p.tag) + '</span>' : '';
+    return '<article class="p-card">' + galleryHTML(p.key, p.photos, p.name, 'gallery-16x10', tag) +
       '<div class="p-body">' +
         '<div class="p-meta"><span>' + esc(p.area) + '</span><span>' + esc(p.status) + '</span></div>' +
         '<h3>' + esc(p.name) + '</h3>' +
+        (p.desc ? '<p class="p-desc">' + esc(p.desc) + '</p>' : '') +
         '<div class="p-facts">' +
-          '<div><small>LISTED AT</small><span>' + esc(p.price) + '</span></div>' +
-          '<div><small>LAYOUT</small><span>' + esc(p.layout) + '</span></div>' +
-          '<div><small>HIGHLIGHT</small><span>' + esc(p.highlight) + '</span></div>' +
+          facts.map(function (f) { return '<div><small>' + esc(f.label) + '</small><span>' + esc(f.value) + '</span></div>'; }).join('') +
         '</div>' +
-        '<a class="btn-dark" href="' + p.url + '" target="_blank" rel="noopener">VIEW PROPERTY</a>' +
+        '<a class="btn-dark" href="' + p.url + '" target="_blank" rel="noopener">' + esc(p.cta || 'VIEW PROPERTY') + '</a>' +
       '</div></article>';
   }).join('');
 
